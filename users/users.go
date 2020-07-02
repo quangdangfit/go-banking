@@ -35,7 +35,7 @@ func Login(username string, pass string) map[string]interface{} {
 
 		defer db.Close()
 
-		var response = prepareResponse(user, accounts)
+		var response = prepareResponse(user, accounts, true)
 
 		return response
 	} else {
@@ -43,9 +43,8 @@ func Login(username string, pass string) map[string]interface{} {
 	}
 }
 
+// Create registration function
 func Register(username string, email string, pass string) map[string]interface{} {
-	db := helpers.ConnectDB()
-	defer db.Close()
 	// Add validation to registration
 	valid := helpers.Validation(
 		[]interfaces.Validation{
@@ -54,6 +53,9 @@ func Register(username string, email string, pass string) map[string]interface{}
 			{Value: pass, Valid: "password"},
 		})
 	if valid {
+		// Create registration logic
+		// Connect DB
+		db := helpers.ConnectDB()
 		generatedPassword := helpers.HashAndSalt([]byte(pass))
 		user := &interfaces.User{Username: username, Email: email, Password: generatedPassword}
 		db.Create(&user)
@@ -61,17 +63,18 @@ func Register(username string, email string, pass string) map[string]interface{}
 		account := &interfaces.Account{Type: "Daily Account", Name: string(username + "'s" + " account"), Balance: 0, UserID: user.ID}
 		db.Create(&account)
 
+		defer db.Close()
 		accounts := []interfaces.ResponseAccount{}
 		respAccount := interfaces.ResponseAccount{ID: account.ID, Name: account.Name, Balance: int(account.Balance)}
 		accounts = append(accounts, respAccount)
-		var response = prepareResponse(user, accounts)
+		var response = prepareResponse(user, accounts, true)
 
 		return response
 	} else {
 		return map[string]interface{}{"message": "not valid values"}
 	}
-}
 
+}
 func prepareToken(user *interfaces.User) string {
 	tokenContent := jwt.MapClaims{
 		"user_id": user.ID,
