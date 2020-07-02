@@ -42,3 +42,12 @@ type Register struct {
 	Email    string
 	Password string
 }
+
+type Login struct {
+	Username string
+	Password string
+}
+
+type ErrResponse struct {
+	Message string
+}

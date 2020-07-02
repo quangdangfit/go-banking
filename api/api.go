@@ -22,26 +22,16 @@ type ErrResponse struct {
 }
 
 func login(w http.ResponseWriter, r *http.Request) {
-	body, err := ioutil.ReadAll(r.Body)
-	helpers.HandleErr(err)
+	// Refactor login to use readBody
+	body := readBody(r)
 
 	var formattedBody Login
-	err = json.Unmarshal(body, &formattedBody)
+	err := json.Unmarshal(body, &formattedBody)
 	helpers.HandleErr(err)
-	login := users.Login(formattedBody.Username, formattedBody.Password)
 
-	if login["message"] == "all is fine" {
-		resp := login
-		json.NewEncoder(w).Encode(resp)
-	} else {
-		if login["message"] == "all is fine" {
-			resp := login
-			json.NewEncoder(w).Encode(resp)
-		} else {
-			resp := ErrResponse{Message: "Wrong username or password"}
-			json.NewEncoder(w).Encode(resp)
-		}
-	}
+	login := users.Login(formattedBody.Username, formattedBody.Password)
+	// Refactor login to use apiResponse function
+	apiResponse(login, w)
 }
 
 func register(w http.ResponseWriter, r *http.Request) {
@@ -60,6 +50,24 @@ func register(w http.ResponseWriter, r *http.Request) {
 		// Handle error in else
 	} else {
 		resp := ErrResponse{Message: "Wrong username or password"}
+		json.NewEncoder(w).Encode(resp)
+	}
+}
+
+func readBody(r *http.Request) []byte {
+	body, err := ioutil.ReadAll(r.Body)
+	helpers.HandleErr(err)
+
+	return body
+}
+
+func apiResponse(call map[string]interface{}, w http.ResponseWriter) {
+	if call["message"] == "all is fine" {
+		resp := call
+		json.NewEncoder(w).Encode(resp)
+		// Handle error in else
+	} else {
+		resp := interfaces.ErrResponse{Message: "Wrong username or password"}
 		json.NewEncoder(w).Encode(resp)
 	}
 }
