@@ -84,19 +84,20 @@ func prepareToken(user *interfaces.User) string {
 	return token
 }
 
-func prepareResponse(user *interfaces.User, accounts []interfaces.ResponseAccount) map[string]interface{} {
+func prepareResponse(user *interfaces.User, accounts []interfaces.ResponseAccount, withToken bool) map[string]interface{} {
 	responseUser := &interfaces.ResponseUser{
 		ID:       user.ID,
 		Username: user.Username,
 		Email:    user.Email,
 		Accounts: accounts,
 	}
-
-	var token = prepareToken(user)
 	var response = map[string]interface{}{"message": "all is fine"}
-	response["jwt"] = token
+	// Add withToken feature to prepare response
+	if withToken {
+		var token = prepareToken(user)
+		response["jwt"] = token
+	}
 	response["data"] = responseUser
-
 	return response
 }
 
