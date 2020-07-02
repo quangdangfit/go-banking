@@ -105,5 +105,22 @@ func prepareResponse(user *interfaces.User, accounts []interfaces.ResponseAccoun
 }
 
 func GetUser(id string, jwt string) map[string]interface{} {
-	return nil
+	isValid := helpers.ValidateToken(id, jwt)
+	// Find and return user
+	if isValid {
+		db := helpers.ConnectDB()
+		user := &interfaces.User{}
+		if db.Where("id = ? ", id).First(&user).RecordNotFound() {
+			return map[string]interface{}{"message": "User not found"}
+		}
+		accounts := []interfaces.ResponseAccount{}
+		db.Table("accounts").Select("id, name, balance").Where("user_id = ? ", user.ID).Scan(&accounts)
+
+		defer db.Close()
+
+		var response = prepareResponse(user, accounts, false)
+		return response
+	} else {
+		return map[string]interface{}{"message": "Not valid token"}
+	}
 }
