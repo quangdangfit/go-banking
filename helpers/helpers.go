@@ -28,8 +28,8 @@ func ConnectDB() *gorm.DB {
 }
 
 func Validation(values []interfaces.Validation) bool {
-	username := regexp.MustCompile("^([A - Za - z0 - 9]{5,}) +$")
-	email := regexp.MustCompile("^[A - Za - z0 - 9] + [@]+[A-Za-z0-9]+[.]+[A-Za-z]+$")
+	username := regexp.MustCompile("[A-Za-z0-9]")
+	email := regexp.MustCompile("^[A-Za-z0-9]+[@]+[A-Za-z0-9]+[.]+[A-Za-z]+$")
 
 	for i := 0; i < len(values); i++ {
 		switch values[i].Valid {
