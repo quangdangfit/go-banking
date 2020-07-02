@@ -2,6 +2,7 @@ package helpers
 
 import (
 	"encoding/json"
+	"github.com/dgrijalva/jwt-go"
 	"github.com/jinzhu/gorm"
 	_ "github.com/lib/pq"
 	"go-banking/interfaces"
@@ -9,6 +10,8 @@ import (
 	"log"
 	"net/http"
 	"regexp"
+	"strconv"
+	"strings"
 )
 
 func HandleErr(err error) {
@@ -66,4 +69,19 @@ func PanicHandler(next http.Handler) http.Handler {
 		}()
 		next.ServeHTTP(w, r)
 	})
+}
+
+func ValidateToken(id string, jwtToken string) bool {
+	cleanJWT := strings.Replace(jwtToken, "Bearer ", "", -1)
+	tokenData := jwt.MapClaims{}
+	token, err := jwt.ParseWithClaims(cleanJWT, tokenData, func(token *jwt.Token) (interface{}, error) {
+		return []byte("TokenPassword"), nil
+	})
+	HandleErr(err)
+	var userId, _ = strconv.ParseFloat(id, 8)
+	if token.Valid && tokenData["user_id"] == userId {
+		return true
+	} else {
+		return false
+	}
 }

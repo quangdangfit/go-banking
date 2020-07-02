@@ -99,3 +99,7 @@ func prepareResponse(user *interfaces.User, accounts []interfaces.ResponseAccoun
 
 	return response
 }
+
+func GetUser(id string, jwt string) map[string]interface{} {
+	return nil
+}
