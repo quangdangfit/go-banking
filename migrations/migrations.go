@@ -1,20 +1,13 @@
 package migrations
 
 import (
-	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 	"go-banking/helpers"
 	"go-banking/interfaces"
 )
 
-func connectDB() *gorm.DB {
-	db, err := gorm.Open("postgres", "host=127.0.0.1 port=5432 user=postgres dbname=postgres password=1234 sslmode=disable")
-	helpers.HandleErr(err)
-	return db
-}
-
 func createAccounts() {
-	db := connectDB()
+	db := helpers.ConnectDB()
 
 	users := &[2]interfaces.User{
 		{Username: "Martin", Email: "martin@martin.com"},
@@ -36,7 +29,7 @@ func createAccounts() {
 func Migrate() {
 	User := &interfaces.User{}
 	Account := &interfaces.Account{}
-	db := connectDB()
+	db := helpers.ConnectDB()
 	db.AutoMigrate(&User, &Account)
 	defer db.Close()
 
