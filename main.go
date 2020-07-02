@@ -1,9 +1,8 @@
 package main
 
-import (
-	"go-banking/migrations"
-)
+import "go-banking/api"
 
 func main() {
-	migrations.Migrate()
+	//migrations.Migrate()
+	api.StartApi()
 }
