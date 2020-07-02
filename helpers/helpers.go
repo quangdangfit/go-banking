@@ -1,10 +1,13 @@
 package helpers
 
 import (
+	"encoding/json"
 	"github.com/jinzhu/gorm"
 	_ "github.com/lib/pq"
 	"go-banking/interfaces"
 	"golang.org/x/crypto/bcrypt"
+	"log"
+	"net/http"
 	"regexp"
 )
 
@@ -48,4 +51,19 @@ func Validation(values []interfaces.Validation) bool {
 		}
 	}
 	return true
+}
+
+func PanicHandler(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		defer func() {
+			error := recover()
+			if error != nil {
+				log.Println(error)
+
+				resp := interfaces.ErrResponse{Message: "Internal server error"}
+				json.NewEncoder(w).Encode(resp)
+			}
+		}()
+		next.ServeHTTP(w, r)
+	})
 }

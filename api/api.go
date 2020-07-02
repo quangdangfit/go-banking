@@ -57,6 +57,8 @@ func apiResponse(call map[string]interface{}, w http.ResponseWriter) {
 
 func StartApi() {
 	router := mux.NewRouter()
+	// Add panic handler middleware
+	router.Use(helpers.PanicHandler)
 	router.HandleFunc("/login", login).Methods("POST")
 	router.HandleFunc("/register", register).Methods("POST")
 	fmt.Println("App is working on port :8888")
