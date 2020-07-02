@@ -21,6 +21,19 @@ type Account struct {
 	UserID  uint
 }
 
+type ResponseAccount struct {
+	ID      uint
+	Name    string
+	Balance int
+}
+
+type ResponseUser struct {
+	ID       uint
+	Username string
+	Email    string
+	Accounts []ResponseAccount
+}
+
 func connectDB() *gorm.DB {
 	db, err := gorm.Open("postgres", "host=127.0.0.1 port=5432 user=postgres dbname=postgres password=1234 sslmode=disable")
 	helpers.HandleErr(err)
