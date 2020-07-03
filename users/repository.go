@@ -3,6 +3,7 @@ package users
 import (
 	"errors"
 	"github.com/google/uuid"
+	"go-banking/accounts"
 	"go-banking/database"
 	"time"
 
@@ -77,6 +78,7 @@ func (r *repo) Register(username string, email string, pass string) (*User, erro
 		generatedPassword := helpers.HashAndSalt([]byte(pass))
 		user := User{UID: uuid.New().String(), Username: username, Email: email, Password: generatedPassword}
 		database.DB.Create(&user)
+		accounts.NewRepository().CreateAccount(user.UID, 0)
 
 		return &user, nil
 	} else {

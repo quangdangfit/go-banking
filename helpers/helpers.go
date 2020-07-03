@@ -75,7 +75,7 @@ func ValidateToken(uid string, jwtToken string) bool {
 		return []byte("TokenPassword"), nil
 	})
 	HandleErr(err)
-	if token.Valid && tokenData["uid"] == uid {
+	if token.Valid {
 		return true
 	} else {
 		return false

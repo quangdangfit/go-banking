@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"github.com/gin-gonic/gin"
+	"go-banking/migrations"
 	"go-banking/routers"
 	"log"
 	"net/http"
@@ -13,7 +14,7 @@ import (
 )
 
 func main() {
-	//migrations.Migrate()
+	migrations.Migrate()
 	engine := gin.Default()
 	routers.API(engine)
 
