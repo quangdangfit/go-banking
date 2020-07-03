@@ -65,9 +65,9 @@ func PanicHandler(next http.Handler) http.Handler {
 	})
 }
 
-func ValidateToken(uid string, jwtToken string) bool {
+func ValidateToken(jwtToken string) (string, bool) {
 	if jwtToken == "" {
-		return false
+		return "", false
 	}
 	cleanJWT := strings.Replace(jwtToken, "Bearer ", "", -1)
 	tokenData := jwt.MapClaims{}
@@ -75,10 +75,11 @@ func ValidateToken(uid string, jwtToken string) bool {
 		return []byte("TokenPassword"), nil
 	})
 	HandleErr(err)
+
 	if token.Valid {
-		return true
+		return tokenData["uid"].(string), true
 	} else {
-		return false
+		return "", false
 	}
 }
 

@@ -20,7 +20,7 @@ func GetTransactionsByAccount(id uint) []interfaces.ResponseTransaction {
 // Create function GetMyTransactions
 func GetMyTransactions(id string, jwt string) map[string]interface{} {
 	// Validate JWT
-	isValid := helpers.ValidateToken(id, jwt)
+	_, isValid := helpers.ValidateToken(jwt)
 	if isValid {
 		// Find and return transactions
 		accounts := []interfaces.ResponseAccount{}

@@ -88,14 +88,15 @@ func (r *repo) Register(username string, email string, pass string) (*User, erro
 }
 
 func (r *repo) GetUser(uid string, jwt string) (*User, error) {
-	isValid := helpers.ValidateToken(uid, jwt)
+	userUUID, isValid := helpers.ValidateToken(jwt)
 	if isValid {
 		user := &User{}
 		if database.DB.Where("uid = ? ", uid).First(&user).RecordNotFound() {
 			return nil, errors.New("user not found")
 		}
-		return user, nil
-	} else {
-		return nil, errors.New("not valid token")
+		if user.UID == userUUID {
+			return user, nil
+		}
 	}
+	return nil, errors.New("not valid token")
 }
