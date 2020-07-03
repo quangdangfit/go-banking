@@ -35,13 +35,15 @@ func (r *repo) UpdateAccount(uuid string, amount int) (*Account, error) {
 
 // Refactor function getAccount to use database package
 func (r *repo) GetAccount(uuid string, auth string) (*Account, error) {
-	isValid := helpers.ValidateToken(uuid, auth)
+	userUUID, isValid := helpers.ValidateToken(auth)
 	if isValid {
 		account := Account{}
 		if database.DB.Where("uuid = ? ", uuid).First(&account).RecordNotFound() {
 			return nil, errors.New("not found account")
 		}
-		return &account, nil
+		if account.UserUUID == userUUID {
+			return &account, nil
+		}
 	}
 	return nil, errors.New("token is invalid")
 
