@@ -17,3 +17,7 @@ func InitDatabase() {
 	database.DB().SetMaxOpenConns(200)
 	DB = database
 }
+
+func init() {
+	InitDatabase()
+}

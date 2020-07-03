@@ -1,31 +1,34 @@
 package migrations
 
 import (
+	"github.com/google/uuid"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 	"go-banking/database"
 	"go-banking/helpers"
 	"go-banking/interfaces"
+	"go-banking/users"
 )
 
 func createAccounts() {
-	users := &[2]interfaces.User{
-		{Username: "Martin", Email: "martin@martin.com"},
-		{Username: "Michael", Email: "michael@michael.com"},
+	usrs := &[2]users.User{
+		{Username: "quang", Email: "quang@quang.com"},
+		{Username: "dang", Email: "dang@dang.com"},
 	}
 
-	for i := 0; i < len(users); i++ {
+	for i := 0; i < len(usrs); i++ {
 		// Correct one way
-		generatedPassword := helpers.HashAndSalt([]byte(users[i].Username))
-		user := &interfaces.User{Username: users[i].Username, Email: users[i].Email, Password: generatedPassword}
+		generatedPassword := helpers.HashAndSalt([]byte(usrs[i].Username))
+		user := &users.User{Username: usrs[i].Username, Email: usrs[i].Email, Password: generatedPassword, UID: uuid.New().String()}
 		database.DB.Create(&user)
 
-		account := &interfaces.Account{Type: "Daily Account", Name: string(users[i].Username + "'s" + " account"), Balance: uint(10000 * int(i+1)), UserID: user.ID}
-		database.DB.Create(&account)
+		//account := &interfaces.Account{Type: "Daily Account", Name: string(usrs[i].Username + "'s" + " account"), Balance: uint(10000 * int(i+1)), UserID: user.ID}
+		//database.DB.Create(&account)
 	}
 }
 
 func Migrate() {
-	User := &interfaces.User{}
+	database.InitDatabase()
+	User := users.User{}
 	Account := &interfaces.Account{}
 	Transactions := &interfaces.Transaction{}
 

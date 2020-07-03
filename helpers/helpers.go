@@ -4,18 +4,19 @@ import (
 	"encoding/json"
 	"github.com/dgrijalva/jwt-go"
 	_ "github.com/lib/pq"
+	"gitlab.com/quangdangfit/gocommon/utils/logger"
 	"go-banking/interfaces"
 	"golang.org/x/crypto/bcrypt"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"regexp"
-	"strconv"
 	"strings"
 )
 
 func HandleErr(err error) {
 	if err != nil {
-		panic(err.Error())
+		logger.Error(err.Error())
 	}
 }
 
@@ -64,17 +65,35 @@ func PanicHandler(next http.Handler) http.Handler {
 	})
 }
 
-func ValidateToken(id string, jwtToken string) bool {
+func ValidateToken(uid string, jwtToken string) bool {
+	if jwtToken == "" {
+		return false
+	}
 	cleanJWT := strings.Replace(jwtToken, "Bearer ", "", -1)
 	tokenData := jwt.MapClaims{}
 	token, err := jwt.ParseWithClaims(cleanJWT, tokenData, func(token *jwt.Token) (interface{}, error) {
 		return []byte("TokenPassword"), nil
 	})
 	HandleErr(err)
-	var userId, _ = strconv.ParseFloat(id, 8)
-	if token.Valid && tokenData["user_id"] == userId {
+	if token.Valid && tokenData["uid"] == uid {
 		return true
 	} else {
 		return false
 	}
+}
+
+func ReadBody(r *http.Request) []byte {
+	body, err := ioutil.ReadAll(r.Body)
+	HandleErr(err)
+
+	return body
+}
+
+func PrepareResponse(data interface{}, message string, code string) map[string]interface{} {
+	result := map[string]interface{}{
+		"data":    data,
+		"message": message,
+	}
+
+	return result
 }
