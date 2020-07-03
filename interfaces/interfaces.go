@@ -65,3 +65,10 @@ type TransactionBody struct {
 	To     uint
 	Amount int
 }
+
+type ResponseTransaction struct {
+	ID     uint
+	From   uint
+	To     uint
+	Amount int
+}
