@@ -3,6 +3,7 @@ package migrations
 import (
 	"github.com/google/uuid"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
+	"go-banking/accounts"
 	"go-banking/database"
 	"go-banking/helpers"
 	"go-banking/interfaces"
@@ -29,10 +30,8 @@ func createAccounts() {
 func Migrate() {
 	database.InitDatabase()
 	User := users.User{}
-	Account := &interfaces.Account{}
+	Account := &accounts.Account{}
 	Transactions := &interfaces.Transaction{}
 
 	database.DB.AutoMigrate(&User, &Account, &Transactions)
-
-	createAccounts()
 }
