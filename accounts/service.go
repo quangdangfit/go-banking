@@ -9,6 +9,7 @@ import (
 )
 
 type Service interface {
+	CreateAccount(c *gin.Context)
 	GetAccountByID(c *gin.Context)
 	//GetAccountsByUser(c *gin.Context)
 }
@@ -31,6 +32,25 @@ func (s *service) prepareResponse(account *Account) map[string]interface{} {
 	}
 
 	return res
+}
+
+func (s *service) CreateAccount(c *gin.Context) {
+	auth := c.GetHeader("Authorization")
+
+	userUUID, isValid := helpers.ValidateToken(auth)
+	if isValid {
+		account, err := s.repo.CreateAccount(userUUID, 0)
+		if err != nil {
+			logger.Error(err.Error())
+			c.JSON(http.StatusBadRequest, helpers.PrepareResponse(nil, err.Error(), ""))
+			return
+		}
+
+		res := s.prepareResponse(account)
+		c.JSON(http.StatusOK, helpers.PrepareResponse(res, "OK", ""))
+	} else {
+		c.JSON(http.StatusBadRequest, helpers.PrepareResponse(nil, "token is invalid", ""))
+	}
 }
 
 func (s *service) GetAccountByID(c *gin.Context) {
