@@ -15,6 +15,7 @@ func API(e *gin.Engine) {
 		v1.GET("/users/:uid", user.GetUser)
 
 		account := accounts.NewService()
+		v1.POST("/accounts", account.CreateAccount)
 		v1.GET("/accounts/:uid", account.GetAccountByID)
 
 	}
