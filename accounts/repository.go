@@ -13,6 +13,7 @@ type Repository interface {
 	UpdateAccount(uuid string, amount int) (*Account, error)
 	GetAccount(uuid string, auth string) (*Account, error)
 	CreateAccount(userUUID string, balance uint) (*Account, error)
+	GetAccountsByUser(auth string) (*[]Account, error)
 	generateAccountNumber() string
 }
 
@@ -60,6 +61,18 @@ func (r *repo) CreateAccount(userUUID string, balance uint) (*Account, error) {
 	database.DB.Create(&account)
 
 	return &account, nil
+}
+
+func (r *repo) GetAccountsByUser(auth string) (*[]Account, error) {
+	userUUID, isValid := helpers.ValidateToken(auth)
+	if isValid {
+		account := []Account{}
+		if database.DB.Where("user_uuid = ? ", userUUID).Find(&account).RecordNotFound() {
+			return nil, errors.New("not found account")
+		}
+		return &account, nil
+	}
+	return nil, errors.New("token is invalid")
 }
 
 func (r *repo) generateAccountNumber() string {

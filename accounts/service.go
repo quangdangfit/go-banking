@@ -11,7 +11,7 @@ import (
 type Service interface {
 	CreateAccount(c *gin.Context)
 	GetAccountByID(c *gin.Context)
-	//GetAccountsByUser(c *gin.Context)
+	GetAccountsByUser(c *gin.Context)
 }
 
 type service struct {
@@ -23,12 +23,29 @@ func NewService() Service {
 }
 
 func (s *service) prepareResponse(account *Account) map[string]interface{} {
-	var userRes AccountResponse
+	var accRes AccountResponse
 	data, _ := json.Marshal(account)
-	json.Unmarshal(data, &userRes)
+	json.Unmarshal(data, &accRes)
 
 	res := map[string]interface{}{
-		"account": userRes,
+		"account": accRes,
+	}
+
+	return res
+}
+func (s *service) prepareListResponse(accounts *[]Account) map[string]interface{} {
+	var accRes AccountResponse
+	var accountsRes = []AccountResponse{}
+
+	for _, acc := range *accounts {
+		data, _ := json.Marshal(acc)
+		json.Unmarshal(data, &accRes)
+
+		accountsRes = append(accountsRes, accRes)
+	}
+
+	res := map[string]interface{}{
+		"accounts": accountsRes,
 	}
 
 	return res
@@ -64,5 +81,18 @@ func (s *service) GetAccountByID(c *gin.Context) {
 		return
 	}
 	res := s.prepareResponse(account)
+	c.JSON(http.StatusOK, helpers.PrepareResponse(res, "OK", ""))
+}
+
+func (s *service) GetAccountsByUser(c *gin.Context) {
+	auth := c.GetHeader("Authorization")
+
+	accounts, err := s.repo.GetAccountsByUser(auth)
+	if err != nil {
+		logger.Error(err.Error())
+		c.JSON(http.StatusBadRequest, helpers.PrepareResponse(nil, err.Error(), ""))
+		return
+	}
+	res := s.prepareListResponse(accounts)
 	c.JSON(http.StatusOK, helpers.PrepareResponse(res, "OK", ""))
 }
