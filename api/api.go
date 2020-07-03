@@ -6,6 +6,7 @@ import (
 	"github.com/gorilla/mux"
 	"go-banking/helpers"
 	"go-banking/interfaces"
+	"go-banking/transactions"
 	"go-banking/useraccounts"
 	"go-banking/users"
 	"io/ioutil"
@@ -56,6 +57,15 @@ func transaction(w http.ResponseWriter, r *http.Request) {
 
 	transaction := useraccounts.Transaction(formattedBody.UserId, formattedBody.From, formattedBody.To, formattedBody.Amount, auth)
 	apiResponse(transaction, w)
+}
+
+func getMyTransactions(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	userId := vars["userID"]
+	auth := r.Header.Get("Authorization")
+
+	transactions := transactions.GetMyTransactions(userId, auth)
+	apiResponse(transactions, w)
 }
 
 func readBody(r *http.Request) []byte {
