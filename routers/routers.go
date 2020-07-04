@@ -2,9 +2,9 @@ package routers
 
 import (
 	"github.com/gin-gonic/gin"
-	"go-banking/accounts"
-	"go-banking/transactions"
-	"go-banking/users"
+	"go-banking/api/accounts"
+	"go-banking/api/transactions"
+	"go-banking/api/users"
 )
 
 func API(e *gin.Engine) {
