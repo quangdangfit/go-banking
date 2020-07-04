@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"github.com/gin-gonic/gin"
 	"gitlab.com/quangdangfit/gocommon/utils/logger"
-	"go-banking/helpers"
+	"go-banking/utils/response"
 	"net/http"
 )
 
@@ -59,12 +59,12 @@ func (s *service) CreateTransaction(c *gin.Context) {
 	transaction, err := s.repo.CreateTransaction(reqBody.From, reqBody.To, reqBody.Amount)
 	if err != nil {
 		logger.Error(err.Error())
-		c.JSON(http.StatusBadRequest, helpers.PrepareResponse(nil, err.Error(), ""))
+		c.JSON(http.StatusBadRequest, response.PrepareResponse(nil, err.Error(), ""))
 		return
 	}
 
 	res := s.prepareResponse(transaction)
-	c.JSON(http.StatusOK, helpers.PrepareResponse(res, "OK", ""))
+	c.JSON(http.StatusOK, response.PrepareResponse(res, "OK", ""))
 }
 
 func (s *service) GetTransactionsOfAccount(c *gin.Context) {
@@ -73,9 +73,9 @@ func (s *service) GetTransactionsOfAccount(c *gin.Context) {
 	transactions, err := s.repo.GetTransactionsOfAccount(auth)
 	if err != nil {
 		logger.Error(err.Error())
-		c.JSON(http.StatusBadRequest, helpers.PrepareResponse(nil, err.Error(), ""))
+		c.JSON(http.StatusBadRequest, response.PrepareResponse(nil, err.Error(), ""))
 		return
 	}
 	res := s.prepareListResponse(transactions)
-	c.JSON(http.StatusOK, helpers.PrepareResponse(res, "OK", ""))
+	c.JSON(http.StatusOK, response.PrepareResponse(res, "OK", ""))
 }

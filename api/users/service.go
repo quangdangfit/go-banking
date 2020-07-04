@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"github.com/gin-gonic/gin"
 	"gitlab.com/quangdangfit/gocommon/utils/logger"
-	"go-banking/helpers"
+	"go-banking/utils/response"
 	"net/http"
 )
 
@@ -47,12 +47,12 @@ func (s *service) Login(c *gin.Context) {
 	user, err := s.repo.Login(reqBody.Username, reqBody.Password)
 	if err != nil {
 		logger.Error(err.Error())
-		c.JSON(http.StatusBadRequest, helpers.PrepareResponse(nil, err.Error(), ""))
+		c.JSON(http.StatusBadRequest, response.PrepareResponse(nil, err.Error(), ""))
 		return
 	}
 
 	res := s.prepareResponse(user, true)
-	c.JSON(http.StatusOK, helpers.PrepareResponse(res, "OK", ""))
+	c.JSON(http.StatusOK, response.PrepareResponse(res, "OK", ""))
 }
 
 func (s *service) Register(c *gin.Context) {
@@ -65,12 +65,12 @@ func (s *service) Register(c *gin.Context) {
 	user, err := s.repo.Register(reqBody.Username, reqBody.Email, reqBody.Password)
 	if err != nil {
 		logger.Error(err.Error())
-		c.JSON(http.StatusBadRequest, helpers.PrepareResponse(nil, err.Error(), ""))
+		c.JSON(http.StatusBadRequest, response.PrepareResponse(nil, err.Error(), ""))
 		return
 	}
 
 	res := s.prepareResponse(user, true)
-	c.JSON(http.StatusOK, helpers.PrepareResponse(res, "OK", ""))
+	c.JSON(http.StatusOK, response.PrepareResponse(res, "OK", ""))
 }
 
 func (s *service) GetUser(c *gin.Context) {
@@ -80,9 +80,9 @@ func (s *service) GetUser(c *gin.Context) {
 	user, err := s.repo.GetUser(userId, auth)
 	if err != nil {
 		logger.Error(err.Error())
-		c.JSON(http.StatusBadRequest, helpers.PrepareResponse(nil, err.Error(), ""))
+		c.JSON(http.StatusBadRequest, response.PrepareResponse(nil, err.Error(), ""))
 		return
 	}
 	res := s.prepareResponse(user, false)
-	c.JSON(http.StatusOK, helpers.PrepareResponse(res, "OK", ""))
+	c.JSON(http.StatusOK, response.PrepareResponse(res, "OK", ""))
 }
