@@ -2,9 +2,9 @@ package transactions
 
 import (
 	"errors"
+	"gitlab.com/quangdangfit/gocommon/utils/logger"
 	"go-banking/api/accounts"
 	"go-banking/database"
-	"lib/utils/logger"
 )
 
 type Repository interface {

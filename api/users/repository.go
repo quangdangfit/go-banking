@@ -5,11 +5,11 @@ import (
 	"github.com/google/uuid"
 	"go-banking/api/accounts"
 	"go-banking/database"
+	"go-banking/utils/errorHandler"
+	"go-banking/utils/validation"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
-	"go-banking/helpers"
-	"go-banking/interfaces"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -34,15 +34,15 @@ func (r *repo) GenerateToken(user *User) string {
 	}
 	jwtToken := jwt.NewWithClaims(jwt.GetSigningMethod("HS256"), tokenContent)
 	token, err := jwtToken.SignedString([]byte("TokenPassword"))
-	helpers.HandleErr(err)
+	errorHandler.HandleErr(err)
 
 	return token
 }
 
 func (r *repo) Login(username string, pass string) (*User, error) {
 	// Validation before login
-	valid := helpers.Validation(
-		[]interfaces.Validation{
+	valid := validation.Validate(
+		[]validation.Validation{
 			{Value: username, Valid: "username"},
 			{Value: pass, Valid: "password"},
 		})
@@ -67,15 +67,15 @@ func (r *repo) Login(username string, pass string) (*User, error) {
 
 func (r *repo) Register(username string, email string, pass string) (*User, error) {
 	// Add validation to registration
-	valid := helpers.Validation(
-		[]interfaces.Validation{
+	valid := validation.Validate(
+		[]validation.Validation{
 			{Value: username, Valid: "username"},
 			{Value: email, Valid: "email"},
 			{Value: pass, Valid: "password"},
 		})
 
 	if valid {
-		generatedPassword := helpers.HashAndSalt([]byte(pass))
+		generatedPassword := validation.HashAndSalt([]byte(pass))
 		user := User{UID: uuid.New().String(), Username: username, Email: email, Password: generatedPassword}
 		database.DB.Create(&user)
 		accounts.NewRepository().CreateAccount(user.UID, 0)
@@ -88,7 +88,7 @@ func (r *repo) Register(username string, email string, pass string) (*User, erro
 }
 
 func (r *repo) GetUser(uid string, jwt string) (*User, error) {
-	userUUID, isValid := helpers.ValidateToken(jwt)
+	userUUID, isValid := validation.ValidateToken(jwt)
 	if isValid {
 		user := &User{}
 		if database.DB.Where("uid = ? ", uid).First(&user).RecordNotFound() {

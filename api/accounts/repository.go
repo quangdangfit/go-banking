@@ -4,7 +4,7 @@ import (
 	"errors"
 	"github.com/google/uuid"
 	"go-banking/database"
-	"go-banking/helpers"
+	"go-banking/utils/validation"
 	"strconv"
 	"time"
 )
@@ -36,7 +36,7 @@ func (r *repo) UpdateAccount(uuid string, amount int) (*Account, error) {
 
 // Refactor function getAccount to use database package
 func (r *repo) GetAccount(uuid string, auth string) (*Account, error) {
-	userUUID, isValid := helpers.ValidateToken(auth)
+	userUUID, isValid := validation.ValidateToken(auth)
 	if isValid {
 		account := Account{}
 		if database.DB.Where("uuid = ? ", uuid).First(&account).RecordNotFound() {
@@ -64,7 +64,7 @@ func (r *repo) CreateAccount(userUUID string, balance uint) (*Account, error) {
 }
 
 func (r *repo) GetAccountsByUser(auth string) (*[]Account, error) {
-	userUUID, isValid := helpers.ValidateToken(auth)
+	userUUID, isValid := validation.ValidateToken(auth)
 	if isValid {
 		account := []Account{}
 		if database.DB.Where("user_uuid = ? ", userUUID).Find(&account).RecordNotFound() {
