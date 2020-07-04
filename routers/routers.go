@@ -3,6 +3,7 @@ package routers
 import (
 	"github.com/gin-gonic/gin"
 	"go-banking/accounts"
+	"go-banking/transactions"
 	"go-banking/users"
 )
 
@@ -19,5 +20,7 @@ func API(e *gin.Engine) {
 		v1.GET("/accounts", account.GetAccountsByUser)
 		v1.GET("/accounts/:uid", account.GetAccountByID)
 
+		transaction := transactions.NewService()
+		v1.GET("/transactions", transaction.CreateTransaction)
 	}
 }
