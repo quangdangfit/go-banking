@@ -2,7 +2,7 @@ package transactions
 
 import (
 	"errors"
-	"go-banking/accounts"
+	"go-banking/api/accounts"
 	"go-banking/database"
 	"lib/utils/logger"
 )

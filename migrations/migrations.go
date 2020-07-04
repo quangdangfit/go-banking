@@ -3,11 +3,11 @@ package migrations
 import (
 	"github.com/google/uuid"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
-	"go-banking/accounts"
+	"go-banking/api/accounts"
+	"go-banking/api/users"
 	"go-banking/database"
 	"go-banking/helpers"
 	"go-banking/interfaces"
-	"go-banking/users"
 )
 
 func createAccounts() {

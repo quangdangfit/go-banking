@@ -3,7 +3,7 @@ package users
 import (
 	"errors"
 	"github.com/google/uuid"
-	"go-banking/accounts"
+	"go-banking/api/accounts"
 	"go-banking/database"
 	"time"
 
